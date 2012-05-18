@@ -1,1 +1,9 @@
 Tutorial CoffeeScript
+
+Este proyecto intenta ser una recopilación de ejemplos y pequeños tutoriales que permitan aprender CoffeeScript de manera rápida y cómoda.
+
+Razones por las que te podría interesar aprender CoffeeScript:
+
+* Simplifica la sintaxis de JavaScript haciendo que sea más limpio y legible.
+
+* Es compatible con cualquier librería JavaScript existente, por ejemplo jquery o underscore entre muchas otras.
