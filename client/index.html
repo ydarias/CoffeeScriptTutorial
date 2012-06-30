@@ -13,7 +13,55 @@
     <link href="../style/base.css" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <div class="brand">CoffeeScriptTutorial</div>
+
+            <div class="nav-collapse">
+                <ul class="nav">
+                    <li id="index-item" class="active"><a href="javascript:navigateToIndex()">Inicio</a></li>
+                    <li id="configuration-item"><a href="javascript:navigateToConfiguration()">Configuración</a></li>
+                </ul>
+            </div>
+        </div>
     </div>
+</div>
+<div class="container">
+
+    <span id="app-container"></span>
+
+    <hr>
+
+    <footer>
+        <p>CoffeeScriptTutorial - Yeray Darias</p>
+    </footer>
+
+    <script type="text/javascript" src="../vendor/jquery.js"></script>
+    <script type="text/javascript" src="../vendor/jaml.js"></script>
+    <script type="text/javascript" src="modules/index.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            navigateToIndex();
+        });
+
+        function navigateToConfiguration() {
+            $('#app-container').fadeOut();
+            $('#index-item').removeClass('active');
+            $('#configuration-item').addClass('active');
+            $('#app-container').html('Hola configuration :-)');
+            $('#app-container').fadeIn();
+        }
+
+        function navigateToIndex() {
+            $('#app-container').fadeOut();
+            $('#configuration-item').removeClass('active');
+            $('#index-item').addClass('active');
+            var index = Jaml.render('index');
+            $('#app-container').html(index);
+            $('#app-container').fadeIn();
+        }
+    </script>
+</div>
 </body>
 </html>

@@ -1,7 +1,4 @@
-textarea.input-code {
-    width: 100%;
-    font-family: Courier;
-    font-size: 15px;
-    color: white;
-    background-color: #181A3A;
+body {
+    padding-top: 60px;
+    padding-bottom: 40px;
 }
