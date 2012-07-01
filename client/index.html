@@ -5,8 +5,8 @@
     <meta charset="utf-8">
     <title>CoffeeScriptTutorial</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="description" content="CoffeeScriptTutorial es una web para ayudar a aprender CoffeeScript de forma rápida y sencilla">
+    <meta name="author" content="Yeray Darias">
 
     <link href="../vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
     <link href="../vendor/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
@@ -22,6 +22,7 @@
                 <ul class="nav">
                     <li id="index-item" class="active"><a href="javascript:navigateToIndex()">Inicio</a></li>
                     <li id="configuration-item"><a href="javascript:navigateToConfiguration()">Configuración</a></li>
+                    <li id="exercises-item"><a href="javascript:navigateToExercises()">Ejercicios</a></li>
                 </ul>
             </div>
         </div>
@@ -39,27 +40,95 @@
 
     <script type="text/javascript" src="../vendor/jquery.js"></script>
     <script type="text/javascript" src="../vendor/jaml.js"></script>
+    <script type="text/javascript" src="../vendor/coffee-script.js"></script>
     <script type="text/javascript" src="modules/index.js"></script>
+    <script type="text/javascript" src="modules/configuration.js"></script>
+    <script type="text/javascript" src="modules/exercises.js"></script>
+    <script type="text/javascript" src="modules/compilationMessage.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
             navigateToIndex();
         });
 
         function navigateToConfiguration() {
-            $('#app-container').fadeOut();
-            $('#index-item').removeClass('active');
-            $('#configuration-item').addClass('active');
-            $('#app-container').html('Hola configuration :-)');
-            $('#app-container').fadeIn();
+            navigate('configuration');
         }
 
         function navigateToIndex() {
+            navigate('index');
+        }
+
+        function navigateToExercises() {
+            navigate('exercises');
+            loadNextExercise();
+        }
+
+        function navigate(target) {
             $('#app-container').fadeOut();
+
             $('#configuration-item').removeClass('active');
-            $('#index-item').addClass('active');
-            var index = Jaml.render('index');
-            $('#app-container').html(index);
+            $('#index-item').removeClass('active');
+
+            $('#' + target + '-item').addClass('active');
+
+            $('#app-container').html(Jaml.render(target));
+
             $('#app-container').fadeIn();
+        }
+
+        var currentExercise = {};
+
+        function loadNextExercise() {
+            $.getJSON('http://localhost:8080', function(data) {
+                currentExercise = data;
+                $('#exercise-title').html(data.title);
+                $('#exercise-description').html(data.description);
+            });
+        }
+
+        function evaluateExercise() {
+            var coffeeCode = $('#source-code').val();
+            try {
+                var jsCode = CoffeeScript.compile(coffeeCode);
+            } catch (e) {
+                var message = {
+                    description: 'Parece que esta solución no es correcta :-(',
+                    hints: e.message
+                };
+                $('#exercise-message').html(Jaml.render('compilation-message', message));
+
+                return;
+            }
+
+            eval(jsCode);
+
+            if (window[currentExercise.rootFunction]) {
+                var i = 0;
+                for (i = 0; i < currentExercise.tests.length; i++) {
+                    var test = currentExercise.tests[i];
+                    if (window[currentExercise.rootFunction](test.input) === test.output)
+                        $('#exercise-message').html(Jaml.render('success-message'), message);
+                    else {
+                        var message = {
+                            description: 'Uppss ... parece que la solución no es correcta',
+                            hints: 'Revisa tú código, parece que hay algo que no encaja con el enunciado del ' +
+                                    'ejercicio ... ánimo seguro que lo resuelves pronto :-)'
+                        };
+                        $('#exercise-message').html(Jaml.render('compilation-message', message));
+                    }
+                }
+            } else {
+                var message = {
+                    description: 'No se ha encontrado la función principal del programa :-(',
+                    hints: '<ul>' +
+                        '<li>Revisa que el nombre de la función que has creado es el esperado.</li>' +
+                        '<li>Recuerda que tienes que asociar la función al objeto window</li>' +
+                        '</ul>'
+                };
+                $('#exercise-message').html(Jaml.render('compilation-message', message));
+            }
+
+            window.foo = null;
         }
     </script>
 </div>

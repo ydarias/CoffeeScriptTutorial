@@ -36,7 +36,7 @@ Jaml.register('index', function () {
             p('Si ya tienes configurada la aplicación y tienes las ideas claras solo te queda hacer una cosa ' +
                 '... empezar los ejercicios, ¡ánimo!'),
             p(
-                a({cls: 'btn', href:'javascript:navigateToExcercises()'}, 'Ejercicios')
+                a({cls: 'btn', href:'javascript:navigateToExercises()'}, 'Ejercicios')
             )
         )
     )
