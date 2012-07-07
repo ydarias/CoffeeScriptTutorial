@@ -7,3 +7,7 @@ body {
     width: 99%;
     height: 10em;
 }
+
+#next-button {
+    text-align: right;
+}

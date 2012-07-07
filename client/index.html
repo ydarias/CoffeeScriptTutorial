@@ -1,6 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-        "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<html lang="es">
 <head>
     <meta charset="utf-8">
     <title>CoffeeScriptTutorial</title>
@@ -41,6 +39,7 @@
     <script type="text/javascript" src="../vendor/jquery.js"></script>
     <script type="text/javascript" src="../vendor/jaml.js"></script>
     <script type="text/javascript" src="../vendor/coffee-script.js"></script>
+    <script type="text/javascript" src="../lib/base.js"></script>
     <script type="text/javascript" src="modules/index.js"></script>
     <script type="text/javascript" src="modules/configuration.js"></script>
     <script type="text/javascript" src="modules/exercises.js"></script>
@@ -108,7 +107,7 @@
                 for (i = 0; i < currentExercise.tests.length; i++) {
                     var test = currentExercise.tests[i];
                     if (window[currentExercise.rootFunction](test.input) === test.output)
-                        $('#exercise-message').html(Jaml.render('success-message'), message);
+                        $('#exercise-message').html(Jaml.render('success-message'));
                     else {
                         var message = {
                             description: 'Uppss ... parece que la solución no es correcta',
@@ -129,7 +128,7 @@
                 $('#exercise-message').html(Jaml.render('compilation-message', message));
             }
 
-            window.foo = null;
+            window[currentExercise.rootFunction] = null;
         }
     </script>
 </div>

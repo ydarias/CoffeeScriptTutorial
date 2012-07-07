@@ -18,3 +18,19 @@ Jaml.register('configuration', function () {
         )
     )
 });
+
+function saveConfiguration() {
+    persistConfigurationData();
+}
+
+function persistConfigurationData() {
+    console.log('LocalStorage support = ' + supports_html5_storage());
+
+    var username = $('#name').val();
+    console.log('Username = ' + username);
+    localStorage['username'] = username;
+
+    var server = $('#server').val();
+    console.log('Server = ' + server);
+    localStorage['server'] = server;
+}
