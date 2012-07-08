@@ -24,15 +24,27 @@ function loadServer(db) {
     var app = express.createServer();
 
     app.get('/user', function (request, response) {
+        console.log('Obteniendo la lista de usuarios inscritos ...');
         findActiveUsers(db, response);
     });
 
     app.post('/user', function (request, response) {
+        console.log('Intentando crear un nuevo usuario ...');
         createNewUser(db, request, response);
     });
 
     app.get('/exercise', function (request, response) {
-        buildSuccessfulResponse(response, { message:'Well done [GET]' });
+        var exercise = {
+            title:'Condicionales',
+            description:"Crea una función llamada 'isVerdad' que devuelva true para la entrada 'Verdad' y false " +
+                "para todas las demás.",
+            rootFunction:'isVerdad',
+            tests:[
+                {input:'Verdad', output:true},
+                {input:'No verdad', output:false}
+            ]
+        };
+        buildSuccessfulResponse(response, exercise);
     });
 
     app.listen(PORT);
@@ -53,6 +65,8 @@ function findActiveUsers(db, response) {
 function createNewUser(db, request, response) {
     request.on('data', function (data) {
         try {
+            console.log(data.toString());
+
             var givenUser = JSON.parse(data);
 
             var user = {
@@ -63,7 +77,7 @@ function createNewUser(db, request, response) {
                 collection.findOne({username:user.username}, function (errFind, item) {
                     if (item) {
                         var error = {
-                            errorMessage:'El usuario indicado ya existe',
+                            errorMessage: 'El usuario indicado ya existe',
                             exception: null
                         };
                         buildErroneousRequestResponse(response, error);
@@ -72,7 +86,7 @@ function createNewUser(db, request, response) {
                             if (errInsert) {
                                 var error = {
                                     errorMessage:'El usuario indicado ya existe',
-                                    exception: errInsert
+                                    exception:errInsert
                                 };
                                 buildErroneousRequestResponse(response, error);
                             } else {
@@ -97,6 +111,8 @@ function createNewUser(db, request, response) {
 }
 
 function buildSuccessfulResponse(response, jsonMessage) {
+    console.log('Successful request - ' + jsonMessage.successMessage);
+
     response.writeHead(200, {
         'Content-Type':'application/json',
         'Cache-Control':'no-cache',
@@ -107,6 +123,8 @@ function buildSuccessfulResponse(response, jsonMessage) {
 }
 
 function buildErroneousRequestResponse(response, jsonMessage) {
+    console.log('Erroneous request - ' + jsonMessage.errorMessage);
+
     response.writeHead(400, {
         'Content-Type':'application/json',
         'Cache-Control':'no-cache',

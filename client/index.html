@@ -51,6 +51,8 @@
 
         function navigateToConfiguration() {
             navigate('configuration');
+            $('#name').val(localStorage['username']);
+            $('#server').val(localStorage['server']);
         }
 
         function navigateToIndex() {
