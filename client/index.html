@@ -81,7 +81,8 @@
         var currentExercise = {};
 
         function loadNextExercise() {
-            $.getJSON('http://localhost:8080', function(data) {
+            var url = localStorage['server'] + '/exercise?username=' + localStorage['username'];
+            $.getJSON(url, function(data) {
                 currentExercise = data;
                 $('#exercise-title').html(data.title);
                 $('#exercise-description').html(data.description);

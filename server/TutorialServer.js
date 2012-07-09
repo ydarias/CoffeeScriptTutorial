@@ -34,6 +34,8 @@ function loadServer(db) {
     });
 
     app.get('/exercise', function (request, response) {
+        console.log('Recuperando ejercicios ...');
+
         var exercise = {
             title:'Condicionales',
             description:"Crea una función llamada 'isVerdad' que devuelva true para la entrada 'Verdad' y false " +
@@ -65,35 +67,23 @@ function findActiveUsers(db, response) {
 function createNewUser(db, request, response) {
     request.on('data', function (data) {
         try {
-            console.log(data.toString());
-
             var givenUser = JSON.parse(data);
 
-            var user = {
-                username:givenUser.username
-            };
+            var user = User.buildUser(givenUser.username);
 
             db.collection('users', function (err, collection) {
-                collection.findOne({username:user.username}, function (errFind, item) {
+                collection.findOne({username: user.username}, function (errFind, item) {
                     if (item) {
-                        var error = {
-                            errorMessage: 'El usuario indicado ya existe',
-                            exception: null
-                        };
+                        var error = Message.buildError('El usuario indicado ya existe');
                         buildErroneousRequestResponse(response, error);
                     } else {
                         collection.insert(user, function (errInsert, result) {
                             if (errInsert) {
-                                var error = {
-                                    errorMessage:'El usuario indicado ya existe',
-                                    exception:errInsert
-                                };
+                                var error = Message.buildError('El usuario indicado ya existe', errInsert);
                                 buildErroneousRequestResponse(response, error);
                             } else {
-                                var success = {
-                                    successMessage:'El usuario ' + user.username + ' se ha creado correctamente',
-                                    result:result
-                                };
+                                var success = Message.buildSuccess(
+                                    'El usuario ' + user.username + ' se ha creado correctamente', result);
                                 buildSuccessfulResponse(response, success);
                             }
                         });
@@ -101,18 +91,13 @@ function createNewUser(db, request, response) {
                 });
             });
         } catch (e) {
-            var error = {
-                errorMessage:'No se ha podido crear el usuario indicado, probablemente la request no es correcta',
-                exception:e
-            };
+            var error = Message.buildError('No se ha podido crear el usuario indicado, probablemente la request no es correcta', e);
             buildErroneousRequestResponse(response, error);
         }
     });
 }
 
 function buildSuccessfulResponse(response, jsonMessage) {
-    console.log('Successful request - ' + jsonMessage.successMessage);
-
     response.writeHead(200, {
         'Content-Type':'application/json',
         'Cache-Control':'no-cache',
@@ -123,8 +108,6 @@ function buildSuccessfulResponse(response, jsonMessage) {
 }
 
 function buildErroneousRequestResponse(response, jsonMessage) {
-    console.log('Erroneous request - ' + jsonMessage.errorMessage);
-
     response.writeHead(400, {
         'Content-Type':'application/json',
         'Cache-Control':'no-cache',
@@ -133,4 +116,41 @@ function buildErroneousRequestResponse(response, jsonMessage) {
         'Access-Control-Allow-Credentials':'true'});
     response.end(JSON.stringify(jsonMessage));
 }
+
+/*
+ * User
+ */
+
+var User = User || {};
+
+User.buildUser = function(username) {
+    return {
+        username: username,
+        points: 0
+    };
+};
+
+/*
+ * Message
+ */
+
+var Message = Message || {};
+
+Message.buildSuccess = function(message, result) {
+    console.log('SUCCESS: ' + message);
+
+    return {
+        successMessage: message,
+        result: result
+    };
+};
+
+Message.buildError = function(message, e) {
+    console.log('ERROR: ' + message);
+
+    return {
+        errorMessage: message,
+        exception: e
+    };
+};
 
