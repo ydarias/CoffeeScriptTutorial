@@ -133,6 +133,31 @@
 
             window[currentExercise.rootFunction] = null;
         }
+
+        function getNextExercise() {
+            function processResponse() {
+                console.log("Success!!!");
+            }
+
+            function processError() {
+                console.log("Error!!! :-(");
+            }
+
+            var requestData = {
+                username: localStorage['username'],
+                sourceCode: $('#source-code').val(),
+                exerciseCode: 'asdf234asdf'
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: localStorage['server'] + '/exercise',
+                data: JSON.stringify(requestData),
+                dataType: 'json',
+                success: processResponse,
+                error: processError
+            });
+        }
     </script>
 </div>
 </body>

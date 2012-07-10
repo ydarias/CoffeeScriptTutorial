@@ -35,25 +35,17 @@ function loadServer(db) {
 
     app.get('/exercise', function (request, response) {
         console.log('Recuperando ejercicios ...');
+        buildSuccessfulResponse(response, Exercises[0]);
+    });
 
-        var exercise = {
-            title:'Condicionales',
-            description:"Crea una función llamada 'isVerdad' que devuelva true para la entrada 'Verdad' y false " +
-                "para todas las demás.",
-            rootFunction:'isVerdad',
-            tests:[
-                {input:'Verdad', output:true},
-                {input:'No verdad', output:false}
-            ]
-        };
-        buildSuccessfulResponse(response, exercise);
+    app.post('/exercise', function (request, response) {
+        console.log('Guardando resultado del ejercicio ...');
+        saveExerciseStatus(db, request, response);
     });
 
     app.listen(PORT);
 
     console.log('El servidor está arrancado y escuchando en el puerto ' + PORT + ' ...');
-
-
 }
 
 function findActiveUsers(db, response) {
@@ -69,18 +61,18 @@ function createNewUser(db, request, response) {
         try {
             var givenUser = JSON.parse(data);
 
-            var user = User.buildUser(givenUser.username);
+            var user = User.createInstance(givenUser.username);
 
             db.collection('users', function (err, collection) {
                 collection.findOne({username: user.username}, function (errFind, item) {
                     if (item) {
                         var error = Message.buildError('El usuario indicado ya existe');
-                        buildErroneousRequestResponse(response, error);
+                        buildErroneousResponse(response, error);
                     } else {
                         collection.insert(user, function (errInsert, result) {
                             if (errInsert) {
                                 var error = Message.buildError('El usuario indicado ya existe', errInsert);
-                                buildErroneousRequestResponse(response, error);
+                                buildErroneousResponse(response, error);
                             } else {
                                 var success = Message.buildSuccess(
                                     'El usuario ' + user.username + ' se ha creado correctamente', result);
@@ -91,8 +83,39 @@ function createNewUser(db, request, response) {
                 });
             });
         } catch (e) {
-            var error = Message.buildError('No se ha podido crear el usuario indicado, probablemente la request no es correcta', e);
-            buildErroneousRequestResponse(response, error);
+            var error = Message.buildError(
+                'No se ha podido crear el usuario indicado, probablemente la request no es correcta', e);
+            buildErroneousResponse(response, error);
+        }
+    });
+}
+
+function saveExerciseStatus(db, request, response) {
+    request.on('data', function(data) {
+        try {
+            var givenExerciseResult = JSON.parse(data);
+
+            db.collection('users', function(err, collection) {
+                collection.findOne({username: givenExerciseResult.username}, function (errFind, item) {
+                    var exercise = Exercise.createInstance(givenExerciseResult);
+                    item.exercises.push(exercise);
+                    item.points = item.points + 1;
+                    item.currentExercise = item.currentExercise + 1;
+
+                    collection.update({username: item.username}, item, {safe: true}, function(err) {
+                        if (err) {
+                            var error = Message.buildError('No se ha podido actualizar el usuario', err);
+                            buildErroneousResponse(response, error);
+                        }
+                    });
+
+                    var success = Message.buildSuccess('El ejercicio se ha guardado corretamente', item);
+                    buildSuccessfulResponse(response, success);
+                });
+            });
+        } catch (e) {
+            var error = Message.buildError('Error inesperado', e);
+            buildErroneousResponse(response, error);
         }
     });
 }
@@ -107,7 +130,7 @@ function buildSuccessfulResponse(response, jsonMessage) {
     response.end(JSON.stringify(jsonMessage));
 }
 
-function buildErroneousRequestResponse(response, jsonMessage) {
+function buildErroneousResponse(response, jsonMessage) {
     response.writeHead(400, {
         'Content-Type':'application/json',
         'Cache-Control':'no-cache',
@@ -117,20 +140,22 @@ function buildErroneousRequestResponse(response, jsonMessage) {
     response.end(JSON.stringify(jsonMessage));
 }
 
-/*
+/**
  * User
  */
 
 var User = User || {};
 
-User.buildUser = function(username) {
+User.createInstance = function(username) {
     return {
         username: username,
-        points: 0
+        points: 0,
+        currentExercise: 0,
+        exercises: []
     };
 };
 
-/*
+/**
  * Message
  */
 
@@ -153,4 +178,30 @@ Message.buildError = function(message, e) {
         exception: e
     };
 };
+
+/**
+ * Listado de ejercicios para el curso
+ */
+
+var Exercise = Exercise || {};
+
+Exercise.createInstance = function(givenResult) {
+    return {
+        sourceCode: givenResult.sourceCode,
+        exerciseCode: givenResult.exerciseCode
+    }
+};
+
+var Exercises = [
+    {
+        title:'Condicionales',
+        description:"Crea una función llamada 'isVerdad' que devuelva true para la entrada 'Verdad' y false " +
+            "para todas las demás.",
+        rootFunction:'isVerdad',
+        tests:[
+            {input:'Verdad', output:true},
+            {input:'No verdad', output:false}
+        ]
+    }
+];
 
