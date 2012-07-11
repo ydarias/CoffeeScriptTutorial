@@ -21,31 +21,7 @@ Jaml.register('configuration', function () {
     );
 });
 
-function saveConfiguration() {
-    var url = $('#server').val() + '/user';
-    var data = {
-        username:$('#name').val()
-    };
-    var processResponse = function (data) {
-        persistConfigurationData();
-    };
-    var processErrorResponse = function(error, textStatus, errorThrown) {
-        var errorResponse = JSON.parse(error.responseText);
-        $('#execution-message').removeClass();
-        $('#execution-message').addClass('alert alert-error');
-        $('#execution-message').html(errorResponse.errorMessage);
-    };
-    $.ajax({
-        type: 'POST',
-        url: url,
-        data: JSON.stringify(data),
-        dataType: 'json',
-        success: processResponse,
-        error: processErrorResponse
-    });
-}
-
-function persistConfigurationData() {
+function saveInLocalStorage() {
     console.log('LocalStorage support = ' + supports_html5_storage());
 
     var username = $('#name').val();
@@ -55,8 +31,35 @@ function persistConfigurationData() {
     var server = $('#server').val();
     console.log('Server = ' + server);
     localStorage['server'] = server;
+}
 
-    $('#execution-message').removeClass();
-    $('#execution-message').addClass('alert alert-success');
-    $('#execution-message').html('Configuración guardada correctamente');
+function saveConfiguration() {
+    saveInLocalStorage();
+
+    var url = $('#server').val() + '/user';
+    var data = {
+        username: localStorage['username']
+    };
+
+    var processResponse = function (data) {
+        $('#execution-message').removeClass();
+        $('#execution-message').addClass('alert alert-success');
+        $('#execution-message').html('Configuración guardada correctamente');
+    };
+
+    var processErrorResponse = function(error, textStatus, errorThrown) {
+        var errorResponse = JSON.parse(error.responseText);
+        $('#execution-message').removeClass();
+        $('#execution-message').addClass('alert alert-error');
+        $('#execution-message').html(errorResponse.errorMessage);
+    };
+
+    $.ajax({
+        type: 'POST',
+        url: url,
+        data: JSON.stringify(data),
+        dataType: 'json',
+        success: processResponse,
+        error: processErrorResponse
+    });
 }

@@ -11,9 +11,14 @@ Jaml.register('success-message', function() {
             a({
                 id: 'next-button',
                 cls: 'btn',
-                href:'javascript:getNextExercise()'
+                href:'javascript:sendExercise()'
             }, 'Siguiente ejercicio')
         )
     )
 
+});
+
+Jaml.register('tutorial-complete', function() {
+   div({cls: 'alert alert-success'}, '¡Enhorabuena!, has completado el tutorial ... ahora estás listo para ' +
+       'convertirte en un "ninja" del CoffeeScript, sigue practicando ;-)');
 });

@@ -81,8 +81,15 @@
         var currentExercise = {};
 
         function loadNextExercise() {
-            var url = localStorage['server'] + '/exercise?username=' + localStorage['username'];
+            $('#exercise-message').html('');
+            $('#source-code').val('');
+
+
+            var url = localStorage['server'] + '/exercise/' + localStorage['username'];
             $.getJSON(url, function(data) {
+                if (data == undefined)
+                    $('#app-container').html(Jaml.render('tutorial-complete'));
+
                 currentExercise = data;
                 $('#exercise-title').html(data.title);
                 $('#exercise-description').html(data.description);
@@ -134,9 +141,9 @@
             window[currentExercise.rootFunction] = null;
         }
 
-        function getNextExercise() {
+        function sendExercise() {
             function processResponse() {
-                console.log("Success!!!");
+                loadNextExercise()
             }
 
             function processError() {

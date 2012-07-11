@@ -38,6 +38,11 @@ function loadServer(db) {
         buildSuccessfulResponse(response, Exercises[0]);
     });
 
+    app.get('/exercise/:username', function (request, response) {
+        console.log('Recuperando ejercicio actual para el usuario ' + request.params.username);
+        respondCurrentExercise(db, request, response, request.params.username);
+    });
+
     app.post('/exercise', function (request, response) {
         console.log('Guardando resultado del ejercicio ...');
         saveExerciseStatus(db, request, response);
@@ -88,6 +93,20 @@ function createNewUser(db, request, response) {
             buildErroneousResponse(response, error);
         }
     });
+}
+
+function respondCurrentExercise(db, request, response, username) {
+    try {
+        db.collection('users', function(err, collection) {
+            collection.findOne({username: username}, function (errFind, item) {
+                var exercise = Exercises[item.currentExercise];
+                buildSuccessfulResponse(response, exercise);
+            });
+        });
+    } catch (e) {
+        var error = Message.buildError('No se ha podido recuperar el ejercicio actual', e);
+        buildErroneousResponse(response, error);
+    }
 }
 
 function saveExerciseStatus(db, request, response) {
@@ -194,7 +213,7 @@ Exercise.createInstance = function(givenResult) {
 
 var Exercises = [
     {
-        title:'Condicionales',
+        title:'Condicionales (1)',
         description:"Crea una función llamada 'isVerdad' que devuelva true para la entrada 'Verdad' y false " +
             "para todas las demás.",
         rootFunction:'isVerdad',
@@ -202,6 +221,18 @@ var Exercises = [
             {input:'Verdad', output:true},
             {input:'No verdad', output:false}
         ]
-    }
+    },
+    {
+        title:'Condicionales (2)',
+        description:"Crea una función llamada 'isPar' que devuelva true para las entradas de números pares y false " +
+            "para todas las demás.",
+        rootFunction:'isPar',
+        tests:[
+            {input:1, output:false},
+            {input:2, output:true},
+            {input:3, output:false},
+            {input:16, output:true}
+        ]
+    },
 ];
 
