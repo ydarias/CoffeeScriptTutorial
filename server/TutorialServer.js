@@ -99,8 +99,13 @@ function respondCurrentExercise(db, request, response, username) {
     try {
         db.collection('users', function(err, collection) {
             collection.findOne({username: username}, function (errFind, item) {
-                var exercise = Exercises[item.currentExercise];
-                buildSuccessfulResponse(response, exercise);
+                try {
+                    var exercise = Exercises[item.currentExercise];
+                    buildSuccessfulResponse(response, exercise);
+                } catch (e) {
+                    var error = Message.buildError('El mensaje recibido no contiene los campos esperados', e);
+                    buildErroneousResponse(response, error);
+                }
             });
         });
     } catch (e) {
@@ -224,14 +229,38 @@ var Exercises = [
     },
     {
         title:'Condicionales (2)',
-        description:"Crea una función llamada 'isPar' que devuelva true para las entradas de números pares y false " +
-            "para todas las demás.",
+        description:"<p>Crea una función llamada 'isPar' que devuelva true para las entradas de números pares y false " +
+            "para todas las demás.</p>" +
+            "<p>Por ejemplo:</p>" +
+            "<p>isPar(1) -> false</p>" +
+            "<p>isPar(2) -> true</p>",
         rootFunction:'isPar',
         tests:[
             {input:1, output:false},
             {input:2, output:true},
             {input:3, output:false},
             {input:16, output:true}
+        ]
+    },
+    {
+        title:'Kata: FizzBuzz',
+        description:"Escribe una función 'fizzBuzz' que cumpla lo que dice el siguiente " +
+            "<a href='http://www.solveet.com/exercises/Kata-FizzBuzz/11' target='blank'>enunciado</a>.",
+        rootFunction:'fizzBuzz',
+        tests:[
+            {input:[1,2,3,4], output:'1,2,fizz,4'},
+            {input:[3,5,10,15], output:'fizz,buzz,buzz,fizzbuzz'}
+        ]
+    },
+    {
+        title:'Kata: StringCalculator',
+        description:"Escribe una función 'stringCalculator' que cumpla lo que dicen los 4 primeros puntos del siguiente " +
+            "<a href='http://www.solveet.com/exercises/Kata-String-Calculator/8' target='blank'>enunciado</a>",
+        rootFunction:'stringCalculator',
+        tests:[
+            {input:'1,2,3', output:6},
+            {input:'2,4\n7,1', output:14},
+            {input:'//;\n1,2;3,4', output:10}
         ]
     },
 ];

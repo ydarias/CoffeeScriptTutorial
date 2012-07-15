@@ -8,12 +8,19 @@
   <link rel="stylesheet" type="text/css" href="vendor/jasmine-1.2.0/jasmine.css">
   <script type="text/javascript" src="vendor/jasmine-1.2.0/jasmine.js"></script>
   <script type="text/javascript" src="vendor/jasmine-1.2.0/jasmine-html.js"></script>
+  <script type="text/javascript" src="vendor/coffee-script.js"></script>
 
   <!-- include source files here... -->
-  <script type="text/javascript" src="specs/HtmlGeneratorSpecs.js"></script>
+  <script type="text/coffeescript">
+
+  </script>
 
   <!-- include spec files here... -->
-  <script type="text/javascript" src="lib/HtmlGenerator.js"></script>
+  <script type="text/coffeescript">
+    describe 'Sandbox', ->
+      it 'have a testing environment', ->
+        expect(true).toBe true
+  </script>
 
   <script type="text/javascript">
     (function() {
