@@ -1,0 +1,89 @@
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>CoffeeScriptTutorial</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="CoffeeScriptTutorial es una web para ayudar a aprender CoffeeScript de forma rápida y sencilla">
+    <meta name="author" content="Yeray Darias">
+
+    <link href="../vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="../vendor/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="../style/base.css" rel="stylesheet">
+    <link href="../style/jquery.dataTables.css" rel="stylesheet">
+</head>
+<body>
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <div class="brand">CoffeeScriptTutorial</div>
+        </div>
+    </div>
+</div>
+<div class="container">
+
+    <h1> Resultados </h1>
+
+    <table id="results" class="table table-striped">
+        <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Puntos</th>
+            <th>IP</th>
+        </tr>
+        </thead>
+        <tbody id="results-list">
+        </tbody>
+    </table>
+
+    <div id="selected-source"></div>
+
+    <hr>
+
+    <footer>
+        <p>CoffeeScriptTutorial - Yeray Darias</p>
+    </footer>
+
+    <script type="text/javascript" src="../vendor/jquery.js"></script>
+    <script type="text/javascript" src="../vendor/jquery.dataTables.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            loadResults();
+        });
+
+        function loadResults() {
+            $.getJSON(localStorage['server'] + '/result', function (data) {
+                var results = data.result;
+                var output = '';
+                for (var i = 0; i < results.length; i++) {
+                    output = output + '<tr><td><a href="javascript:loadSource(\'' +
+                            results[i].username + '\')">' + results[i].username + '</a></td><td>' +
+                            results[i].points + '</td><td>' + results[i].ip + '</td></tr>';
+                }
+                $('#results-list').html(output);
+                $('#results').dataTable({
+                        "bPaginate": false,
+                        "bLengthChange": false,
+                        "bFilter": false,
+                        "bSort": true,
+                        "bInfo": false,
+                        "bAutoWidth": false,
+                        "aaSorting": [[1, "desc"]]
+                    });
+            });
+        }
+
+        function loadSource(username) {
+            $.getJSON(localStorage['server'] + '/result/' + username, function (data) {
+                var exercises = data.result.exercises;
+                var output = '';
+                for (var i = 0; i < exercises.length; i++) {
+                    output = output + '<pre class="prettyprint">' + exercises[i].sourceCode + '</pre>'
+                }
+                $('#selected-source').html(output);
+            });
+        }
+    </script>
+</div>
+</body>
+</html>

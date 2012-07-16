@@ -48,6 +48,18 @@ function loadServer(db) {
         saveExerciseStatus(db, request, response);
     });
 
+    app.get('/result', function (request, response) {
+        var ip = request.header('x-forwarded-for') || request.connection.remoteAddress;
+        console.log('[' + ip + '] Recuperando listado de resultados ...');
+        listResults(db, request, response);
+    });
+
+    app.get('/result/:username', function (request, response) {
+        var ip = request.header('x-forwarded-for') || request.connection.remoteAddress;
+        console.log('[' + ip + '] Recuperando los resultados del usuario ' + request.params.username);
+        listResult(request.params.username, db, request, response);
+    });
+
     app.listen(PORT);
 
     console.log('El servidor está arrancado y escuchando en el puerto ' + PORT + ' ...');
@@ -62,11 +74,12 @@ function findActiveUsers(db, response) {
 }
 
 function createNewUser(db, request, response) {
+    var ip = request.header('x-forwarded-for') || request.connection.remoteAddress;
     request.on('data', function (data) {
         try {
             var givenUser = JSON.parse(data);
 
-            var user = User.createInstance(givenUser.username);
+            var user = User.createInstance(givenUser.username, ip);
 
             db.collection('users', function (err, collection) {
                 collection.findOne({username: user.username}, function (errFind, item) {
@@ -144,6 +157,34 @@ function saveExerciseStatus(db, request, response) {
     });
 }
 
+function listResults(db, request, response) {
+    db.collection('users', function(errCollection, collection) {
+        collection.find({}, {limit: 100}).toArray(function (errFind, items) {
+            if (errFind) {
+                var error = Message.buildError('No se han podido recuperar los resultados', errFind);
+                buildErroneousResponse(response, error);
+            } else {
+                var success = Message.buildSuccess('OK', items);
+                buildSuccessfulResponse(response, success);
+            }
+        });
+    });
+}
+
+function listResult(username, db, request, response) {
+    db.collection('users', function(err, collection) {
+        collection.findOne({username: username}, function (errFind, item) {
+            if (errFind) {
+                var error = Message.buildError('No se han podido recuperar los resultados de ' + username, errFind);
+                buildErroneousResponse(response, error);
+            } else {
+                var success = Message.buildSuccess('OK', item);
+                buildSuccessfulResponse(response, success);
+            }
+        });
+    });
+}
+
 function buildSuccessfulResponse(response, jsonMessage) {
     response.writeHead(200, {
         'Content-Type':'application/json',
@@ -170,12 +211,13 @@ function buildErroneousResponse(response, jsonMessage) {
 
 var User = User || {};
 
-User.createInstance = function(username) {
+User.createInstance = function(username, ip) {
     return {
         username: username,
         points: 0,
         currentExercise: 0,
-        exercises: []
+        exercises: [],
+        ip: ip
     };
 };
 
