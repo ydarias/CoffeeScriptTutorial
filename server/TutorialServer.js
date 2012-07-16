@@ -229,17 +229,36 @@ var Exercises = [
     },
     {
         title:'Condicionales (2)',
-        description:"<p>Crea una función llamada 'isPar' que devuelva true para las entradas de números pares y false " +
-            "para todas las demás.</p>" +
-            "<p>Por ejemplo:</p>" +
-            "<p>isPar(1) -> false</p>" +
-            "<p>isPar(2) -> true</p>",
+        description:"Crea una función llamada 'isPar' que dado un número, devuelva true para las entradas de números " +
+            "pares y false para todas las demás.",
         rootFunction:'isPar',
         tests:[
             {input:1, output:false},
             {input:2, output:true},
             {input:3, output:false},
             {input:16, output:true}
+        ]
+    },
+    {
+        title:'Bucles (1)',
+        description:"Crea una función llamada 'multiplicar' que dado un array de números, devuelva como resultado el " +
+            "producto de todos sus componentes.",
+        rootFunction:'multiplicar',
+        tests:[
+            {input:[1,4,3], output:12},
+            {input:[2,6,5], output:60},
+            {input:[-23,5,6], output:-690}
+        ]
+    },
+    {
+        title:'Bucles (2)',
+        description:"Crea una función llamada 'restar' que dado un array de números, devuelva la resta de cada uno por" +
+            "el siguiente, pero teniendo en cuenta que el resultado nunca sea menor que cero.",
+        rootFunction:'restar',
+        tests:[
+            {input:[1,4,3], output:0},
+            {input:[36,6,5], output:25},
+            {input:[-23,-5,-20], output:2}
         ]
     },
     {
