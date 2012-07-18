@@ -260,6 +260,15 @@ Exercise.createInstance = function(givenResult) {
 
 var Exercises = [
     {
+        title: 'Hola mundo',
+        description:"Bienvenido, lo primero que tienes que hacer es crear una función llamada 'saludo' que devuelva " +
+            "la cadena de texto 'hola CoffeeScript!', ¿sencillo, verdad?",
+        rootFunction:'saludo',
+        tests:[
+            {input: null, output: 'hola CoffeeScript!'}
+        ]
+    },
+    {
         title:'Condicionales (1)',
         description:"Crea una función llamada 'isVerdad' que devuelva true para la entrada 'Verdad' y false " +
             "para todas las demás.",
@@ -324,5 +333,16 @@ var Exercises = [
             {input:'//;\n1,2;3,4', output:10}
         ]
     },
+    {
+        title:'Kata: El número perfecto',
+        description:"Escribe una función 'numeroPerfecto' que cumpla lo que dice el siguiente " +
+            "<a href='http://www.solveet.com/exercises/Numero-perfecto/76' target='blank'>enunciado</a>",
+        rootFunction:'numeroPerfecto',
+        tests:[
+            {input:6, output:6},
+            {input:8, output:6},
+            {input:30, output:28}
+        ]
+    }
 ];
 
