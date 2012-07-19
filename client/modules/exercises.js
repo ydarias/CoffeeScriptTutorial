@@ -12,7 +12,9 @@ Jaml.register('exercises', function() {
             a({
                 cls: 'btn',
                 href:'javascript:evaluateExercise()'
-            }, 'Enviar')
+            },
+
+            '<i class="icon-wrench"/> Compilar')
         )
     );
 });

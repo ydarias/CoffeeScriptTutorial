@@ -6,14 +6,13 @@ Jaml.register('compilation-message', function(message) {
 
 Jaml.register('success-message', function() {
 
-    div({cls: 'alert alert-success'}, '¡Genial!, lo has hecho muy bien, ¿por qué no pruebas el siguiente reto?',
-        p(
-            a({
-                id: 'next-button',
-                cls: 'btn',
-                href:'javascript:sendExercise()'
-            }, 'Siguiente ejercicio')
-        )
+    div({cls: 'alert alert-success'},
+        '¡Genial!, lo has hecho muy bien, ¿por qué no pruebas el siguiente reto?',
+        a({
+            id: 'next-button',
+            cls: 'btn',
+            href:'javascript:sendExercise()'
+        }, '<i class="icon-share-alt"/> Enviar')
     )
 
 });
